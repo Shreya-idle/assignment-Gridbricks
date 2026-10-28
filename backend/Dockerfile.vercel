@@ -1,0 +1,27 @@
+FROM python:3.13-slim AS runtime
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1
+
+WORKDIR /workspace/backend
+
+COPY pyproject.toml README.md ./
+COPY app ./app
+COPY alembic ./alembic
+COPY alembic.ini ./alembic.ini
+
+RUN python -m pip install --upgrade pip \
+    && python -m pip install . \
+    && addgroup --system windsight \
+    && adduser --system --ingroup windsight windsight \
+    && chown -R windsight:windsight /workspace
+
+USER windsight
+EXPOSE 80
+
+HEALTHCHECK --interval=20s --timeout=5s --start-period=20s --retries=3 \
+  CMD python -c "import os, urllib.request; urllib.request.urlopen('http://127.0.0.1:' + os.getenv('PORT', '80') + '/api/v1/health', timeout=3)"
+
+# Migrations are a controlled release step; autoscaling instances must never run them.
+CMD ["sh", "-c", "exec python -m uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-80}"]

@@ -1,0 +1,20 @@
+{
+  "profile": "product-admin",
+  "sourceRoots": ["src"],
+  "locale": "en-GB",
+  "canonicalMap": "UX-CONTRACT.md",
+  "requiredCapabilities": ["Select/Listbox", "Date", "Form", "Scrollbar"],
+  "ownership": {
+    "Select/Listbox": "native",
+    "Date": "native",
+    "Form": "shared-field",
+    "Scrollbar": "global-stylesheet"
+  },
+  "requiredCommands": ["unit", "accessibility", "typecheck", "build"],
+  "commands": {
+    "unit": "npm test",
+    "accessibility": "npm run test:a11y",
+    "typecheck": "npm run typecheck",
+    "build": "npm run build"
+  }
+}
