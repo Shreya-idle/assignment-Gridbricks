@@ -12,12 +12,29 @@ const nullableFinite = (value: unknown) => value === null || finite(value);
 const nonNegativeInteger = (value: unknown) => Number.isInteger(value) && (value as number) >= 0;
 const timestamp = (value: unknown) => typeof value === "string" && Number.isFinite(Date.parse(value));
 
+function debugAnalyticsContract(value: unknown): void {
+  if (!object(value)) {
+    console.error("Analytics response is not an object", value);
+    return;
+  }
+
+  console.log("Analytics response keys:", Object.keys(value));
+  console.log("Analytics contract checks:", {
+    period: object(value.period),
+    cutoff: object(value.cutoff),
+    forecast_history: object(value.forecast_history),
+    metrics: object(value.metrics),
+    quality: object(value.quality),
+    comparisonsArray: Array.isArray(value.comparisons),
+    assumptionsArray: Array.isArray(value.assumptions),
+  });
+}
 function isAnalytics(value: unknown): value is ForecastAccuracyResponse {
   if (!object(value) || !object(value.period) || !object(value.cutoff) || !object(value.forecast_history) || !object(value.metrics) || !object(value.quality)) return false;
   const m = value.metrics, q = value.quality, h = value.forecast_history;
   const qualityKeys = ["actual_intervals_count", "forecast_intervals_count", "matched_intervals_count", "missing_forecast_count", "no_eligible_forecast_count", "missing_actual_count", "invalid_record_count", "duplicate_record_count", "unmatched_forecast_count"];
   return timestamp(value.period.start) && timestamp(value.period.end) && timestamp(value.cutoff.effective_time) && typeof value.cutoff.interpretation === "string"
-    && timestamp(h.publication_from) && timestamp(h.publication_to) && nonNegativeInteger(h.history_horizon_days) && h.completeness === "bounded" && typeof h.limitation === "string"
+    && timestamp(h.publication_from) && timestamp(h.publication_to) && nonNegativeInteger(h.history_horizon_days) && h.completeness === "bounded"
     && nullableFinite(m.mae) && nullableFinite(m.rmse) && nullableFinite(m.bias) && nonNegativeInteger(m.matched_intervals_count)
     && qualityKeys.every((key) => nonNegativeInteger(q[key]))
     && Array.isArray(value.comparisons) && value.comparisons.every((item) => object(item) && timestamp(item.start_time) && timestamp(item.forecast_publish_time) && finite(item.actual_generation) && finite(item.forecast_generation) && finite(item.error) && finite(item.absolute_error) && finite(item.squared_error))
@@ -43,7 +60,18 @@ async function request<T>(path: string, validate: (value: unknown) => value is T
     const message = object(body) && object(body.error) && typeof body.error.message === "string" ? body.error.message : `The API request failed (${response.status}).`;
     throw new ApiError(message, response.status, "http");
   }
-  if (!validate(body)) throw new ApiError("The API response does not match the current WindSight contract.", response.status, "schema");
+  
+  if (!validate(body)) {
+  if (path.includes("forecast-accuracy")) {
+    debugAnalyticsContract(body);
+  }
+
+  throw new ApiError(
+    "The API response does not match the current WindSight contract.",
+    response.status,
+    "schema"
+  );
+}
   return body;
 }
 

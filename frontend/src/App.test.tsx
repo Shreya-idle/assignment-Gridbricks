@@ -9,7 +9,7 @@ vi.mock("./ForecastChart", () => ({ ForecastChart: () => <div data-testid="forec
 const response = {
   period: { start: "2026-01-01T00:00:00Z", end: "2026-01-08T00:00:00Z" },
   cutoff: { effective_time: "2025-12-31T12:00:00Z", interpretation: "UTC" },
-  forecast_history: { publication_from: "2025-12-24T12:00:01Z", publication_to: "2025-12-31T12:00:00Z", history_horizon_days: 7, completeness: "bounded", limitation: "Older publications were not queried." },
+  forecast_history: { publication_from: "2025-12-24T12:00:01Z", publication_to: "2025-12-31T12:00:00Z", history_horizon_days: 7, completeness: "bounded" },
   metrics: { mae: 5, rmse: 6, bias: 1, matched_intervals_count: 1 },
   quality: { actual_intervals_count: 1, forecast_intervals_count: 1, matched_intervals_count: 1, missing_forecast_count: 0, no_eligible_forecast_count: 0, missing_actual_count: 0, invalid_record_count: 0, duplicate_record_count: 0, unmatched_forecast_count: 0 },
   comparisons: [{ start_time: "2026-01-01T00:00:00Z", actual_generation: 100, forecast_generation: 105, forecast_publish_time: "2025-12-31T10:00:00Z", error: 5, absolute_error: 5, squared_error: 25 }], assumptions: [],

@@ -620,7 +620,6 @@ function HistoryNotice({ data }: { data: ForecastAccuracyResponse }) {
           Bounded forecast history ·{" "}
           {data.forecast_history.history_horizon_days} days
         </strong>
-        <p>{data.forecast_history.limitation}</p>
       </div>
     </div>
   );
