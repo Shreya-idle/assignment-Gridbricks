@@ -168,8 +168,6 @@ def analyze_records(
             "no filling or interpolation is used.",
             "Malformed source records fail the request, so invalid_record_count "
             "is zero in successful responses.",
-            "Forecast history is bounded by forecast_history.publication_from; "
-            "older publications are not included.",
         ],
     )
 

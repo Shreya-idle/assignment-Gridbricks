@@ -29,12 +29,11 @@ beforeEach(() => {
 afterEach(() => { cleanup(); vi.clearAllMocks(); });
 
 describe("saved analysis UI", () => {
-  it("blocks guest saving and preserves the return URL", async () => {
+  it("shows the save control for guests without authentication messaging", () => {
     mocks.auth = { status: "authenticated", isGuest: true, accessToken: "guest-token" };
-    function Location() { return <output>{JSON.stringify(useLocation().state)}</output>; }
-    render(<MemoryRouter initialEntries={["/forecast-analysis?from=2026-01-01"]}><SaveAnalysisControl filters={filters} /><Location /></MemoryRouter>);
-    await userEvent.click(screen.getByRole("button", { name: "Sign in to save" }));
-    expect(screen.getByText(/forecast-analysis.*from=2026-01-01/)).toBeInTheDocument();
+    render(<MemoryRouter><SaveAnalysisControl filters={filters} /></MemoryRouter>);
+    expect(screen.getByRole("button", { name: "Save analysis" })).toBeInTheDocument();
+    expect(screen.queryByText(/sign in|account required/i)).not.toBeInTheDocument();
     expect(mocks.create).not.toHaveBeenCalled();
   });
 

@@ -53,6 +53,15 @@ describe("Forecast Analysis", () => {
 describe("routes and pages", () => {
   it("renders the authentication screen without blocking public routes", async () => { render(<MemoryRouter initialEntries={["/auth"]}><App /></MemoryRouter>); expect(await screen.findByRole("heading", { name: /sign in to windsight/i })).toBeInTheDocument(); expect(screen.getByRole("link", { name: /return to public analytics/i })).toBeInTheDocument(); });
   it.each([["/forecast-accuracy", /forecast accuracy/i], ["/settings", /analysis settings/i]])("renders %s", async (path, heading) => { vi.stubGlobal("fetch", vi.fn().mockResolvedValue(ok(response))); render(<MemoryRouter initialEntries={[path]}><App /></MemoryRouter>); expect(await screen.findByRole("heading", { name: heading })).toBeInTheDocument(); });
+  it.each(["/forecast-analysis", "/forecast-accuracy", "/settings"])("does not expose saved analysis controls on %s", async (path) => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(ok(response)));
+    render(<MemoryRouter initialEntries={[path]}><App /></MemoryRouter>);
+    expect((await screen.findAllByRole("heading")).length).toBeGreaterThan(0);
+    expect(screen.queryByText("Save this analysis")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Analysis name")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Save analysis" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Saved analyses" })).not.toBeInTheDocument();
+  });
   it("renders data source metadata", async () => { vi.stubGlobal("fetch", vi.fn().mockResolvedValue(ok(sources))); render(<MemoryRouter initialEntries={["/data-sources"]}><App /></MemoryRouter>); expect(await screen.findByText("FUELHH")).toBeInTheDocument(); expect(screen.getByText("WINDFOR")).toBeInTheDocument(); });
   it("renders an explicit empty source state", async () => { vi.stubGlobal("fetch", vi.fn().mockResolvedValue(ok([]))); render(<MemoryRouter initialEntries={["/data-sources"]}><App /></MemoryRouter>); expect(await screen.findByText("No source metadata returned")).toBeInTheDocument(); });
   it("rejects malformed analytics instead of displaying it", async () => { vi.stubGlobal("fetch", vi.fn().mockResolvedValue(ok({ metrics: {} }))); render(<MemoryRouter initialEntries={["/forecast-analysis"]}><App /></MemoryRouter>); expect(await screen.findByRole("alert")).toHaveTextContent(/does not match/i); });

@@ -38,7 +38,6 @@ import { AuthProvider, useAuth } from "./auth";
 import { AuthPage } from "./AuthPage";
 import { Brand, Field, InfoHint, MetricCard, navigation } from "./components";
 import { ForecastChart } from "./ForecastChart";
-import { SaveAnalysisControl, SavedAnalysesPanel } from "./SavedAnalyses";
 import type {
   AnalysisFilters,
   ForecastAccuracyResponse,
@@ -456,7 +455,6 @@ function ForecastAnalysis({ accuracy = false }: { accuracy?: boolean }) {
         submit={model.submit}
         reset={model.reset}
       />
-      <SaveAnalysisControl filters={model.committed} />
       {model.requestError && (
         <ErrorBanner
           title="Unable to retrieve analysis"
@@ -906,7 +904,6 @@ function Settings() {
         }}
         submitLabel="Open analysis"
       />
-      <SavedAnalysesPanel />
     </AppShell>
   );
 }

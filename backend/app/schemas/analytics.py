@@ -55,10 +55,6 @@ class ForecastHistoryDetails(BaseModel):
     publication_to: datetime
     history_horizon_days: int = Field(ge=1)
     completeness: Literal["bounded"] = "bounded"
-    limitation: str = (
-        "Forecast publications older than publication_from were not queried; "
-        "missing forecasts therefore do not prove that Elexon never published one."
-    )
 
 
 class ForecastAccuracyResponse(BaseModel):

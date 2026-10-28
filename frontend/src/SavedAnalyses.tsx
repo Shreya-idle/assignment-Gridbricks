@@ -1,5 +1,5 @@
 import { type FormEvent, useCallback, useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import { filtersToSearch } from "./analysis";
 import { createSavedAnalysis, deleteSavedAnalysis, listSavedAnalyses, renameSavedAnalysis } from "./api";
@@ -8,13 +8,10 @@ import type { AnalysisFilters, SavedAnalysis } from "./types";
 
 export function SaveAnalysisControl({ filters }: { filters: AnalysisFilters }) {
   const auth = useAuth();
-  const location = useLocation();
-  const navigate = useNavigate();
   const [name, setName] = useState("");
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const canSave = auth.status === "authenticated" && !auth.isGuest && Boolean(auth.accessToken);
 
   async function save(event: FormEvent) {
     event.preventDefault(); setBusy(true); setError(null); setMessage(null);
@@ -25,23 +22,7 @@ export function SaveAnalysisControl({ filters }: { filters: AnalysisFilters }) {
     finally { setBusy(false); }
   }
 
-  if (!canSave) {
-    return (
-      <section className="save-panel" aria-labelledby="save-analysis-title">
-        <div>
-          <strong id="save-analysis-title">Save this analysis</strong>
-          <p>Sign in with a permanent account to save analysis configurations.</p>
-        </div>
-        <button
-          className="secondary-button"
-          type="button"
-          onClick={() => navigate("/auth", { state: { returnTo: `${location.pathname}${location.search}` } })}
-        >
-          Sign in to save
-        </button>
-      </section>
-    );
-  }
+ 
 
   return (
     <section className="save-panel" aria-labelledby="save-analysis-title">
@@ -96,18 +77,7 @@ export function SavedAnalysesPanel() {
   }, [enabled, token]);
   useEffect(() => { void load(); }, [load]);
 
-  if (!enabled) {
-    return (
-      <section className="saved-list-panel">
-        <h2>Saved analyses</h2>
-        <p>
-          {auth.isGuest
-            ? "Saved configurations are available after creating or signing into a permanent account."
-            : "Sign in to manage saved analysis configurations."}
-        </p>
-      </section>
-    );
-  }
+
 
   return (
     <section className="saved-list-panel" aria-labelledby="saved-list-title">

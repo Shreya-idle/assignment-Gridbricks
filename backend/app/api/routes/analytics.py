@@ -20,9 +20,5 @@ async def forecast_accuracy(
     ],
     service: Annotated[AnalyticsService, Depends(get_analytics_service)],
 ) -> ForecastAccuracyResponse:
-    """Compare actuals with the latest eligible forecast from bounded publication history.
-
-    The response's ``forecast_history`` field discloses the queried publication
-    window. Missing forecasts are not proof that no older publication exists.
-    """
+    """Compare actuals with the latest forecast eligible at the publication cutoff."""
     return await service.forecast_accuracy(start, end, cutoff)

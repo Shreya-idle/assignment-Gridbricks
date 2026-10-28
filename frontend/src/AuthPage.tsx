@@ -49,7 +49,7 @@ export function AuthPage() {
         <Brand />
         <p className="page-eyebrow">SECURE WORKSPACE ACCESS</p>
         <h1 id="auth-title">{mode === "sign-in" ? "Sign in to WindSight" : "Create your account"}</h1>
-        <p>Analytics remain public. An account is only required to save and manage analysis configurations.</p>
+        <p>Analytics remain public.</p>
         {!auth.configured && <div className="inline-alert" role="alert">Supabase authentication is not configured for this environment.</div>}
         <form onSubmit={submit} className="auth-form">
           <Field id="auth-email" label="Email">

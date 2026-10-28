@@ -202,6 +202,12 @@ async def test_analytics_service_retrieves_bounded_publication_history_and_selec
     assert response.forecast_history.publication_from == datetime(
         2024, 12, 25, 10, 0, 1, tzinfo=UTC
     )
+    assert set(response.model_dump()["forecast_history"]) == {
+        "publication_from",
+        "publication_to",
+        "history_horizon_days",
+        "completeness",
+    }
 
 
 @pytest.mark.asyncio
@@ -249,6 +255,12 @@ async def test_analytics_endpoint_success_empty_and_naive_cutoff(api_client, stu
     assert response.status_code == 200
     assert response.json()["metrics"]["mae"] == 10
     assert response.json()["forecast_history"]["completeness"] == "bounded"
+    assert set(response.json()["forecast_history"]) == {
+        "publication_from",
+        "publication_to",
+        "history_horizon_days",
+        "completeness",
+    }
     stub.actual_data = []
     stub.forecast_data = []
     empty = await api_client.get("/api/v1/analytics/forecast-accuracy", params=params)

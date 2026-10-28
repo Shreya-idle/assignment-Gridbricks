@@ -3,16 +3,14 @@
 WindSight compares Great Britain wind-generation forecasts with actual generation. The React/Vite
 dashboard calls a FastAPI service that retrieves live Elexon FUELHH and WINDFOR data, applies an
 inclusive publication-time decision cutoff, and reports MAE, RMSE, signed bias, coverage, and data
-quality. PostgreSQL stores retrieved source records and permanent users' saved configurations;
-Supabase Auth supplies email/password and anonymous guest sessions.
+quality. PostgreSQL stores retrieved source records, and Supabase Auth supplies email/password
+and anonymous guest sessions.
 
 ## Architecture and boundaries
 
 - Analytics and source-status endpoints are public and read live Elexon data.
 - Persistence is best-effort for Elexon retrievals: a database outage does not replace valid live
   analytics with an empty or failed result.
-- Saved-analysis endpoints require a verified, non-anonymous Supabase JWT and scope every query to
-  its `sub` UUID.
 - The browser receives only the Supabase project URL and publishable key. Database credentials and
   service-role keys remain backend-only.
 
@@ -150,8 +148,7 @@ tests. Automated auth tests use generated keys and mocked JWKS; they never requi
   deterministic tie-breaks; neither rule asserts source authority.
 - Older publications outside the reported bounded history may exist.
 - Source health is process-local and resets after backend restart.
-- Anonymous users can explore analytics but cannot save configurations; their identity cannot be
-  recovered after logout or cleared browser storage.
+- Anonymous sessions cannot be recovered after logout or cleared browser storage.
 - Live end-to-end authentication requires manual Supabase project configuration.
 
 See [backend/README.md](backend/README.md) for API details and [docs/DEMO.md](docs/DEMO.md) for the

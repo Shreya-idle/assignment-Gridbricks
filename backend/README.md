@@ -41,10 +41,9 @@ market or purchasing deadline**.
 Analytics reads the raw WINDFOR stream through a bounded publication-time window ending at the
 inclusive cutoff. `ANALYTICS_FORECAST_HISTORY_DAYS` controls the lookback and defaults to seven
 days; it cannot exceed `ELEXON_MAX_RANGE_DAYS`. Every response reports the effective
-`forecast_history.publication_from`, `publication_to`, and `completeness: "bounded"`. Publications
-older than that boundary are not queried, so a missing forecast does not prove that Elexon never
-published one. The dedicated `wind/latest/stream` endpoint is not used because its documented
-contract provides a latest forecast view but no as-of-cutoff publication parameter.
+`forecast_history.publication_from`, `publication_to`, and `completeness: "bounded"`. The
+dedicated `wind/latest/stream` endpoint is not used because its documented contract provides a
+latest forecast view but no as-of-cutoff publication parameter.
 
 For each delivery `startTime`, analytics chooses the latest eligible publication. If records have
 the same delivery and publication timestamps, the highest numeric generation is the documented,
@@ -86,8 +85,7 @@ Example from deterministic illustrative data (not live market data):
     "publication_from": "2024-12-24T12:00:01Z",
     "publication_to": "2024-12-31T12:00:00Z",
     "history_horizon_days": 7,
-    "completeness": "bounded",
-    "limitation": "Forecast publications older than publication_from were not queried; missing forecasts therefore do not prove that Elexon never published one."
+    "completeness": "bounded"
   },
   "metrics": {"mae": 10.0, "rmse": 10.0, "bias": 10.0, "matched_intervals_count": 1},
   "quality": {
@@ -150,13 +148,11 @@ Verify `GET /api/v1/health` for application health and `GET /api/v1/health/datab
 credential-free connectivity result. The latter returns HTTP 503 when PostgreSQL is unavailable or
 not configured.
 
-## Supabase authentication and saved analyses
+## Supabase authentication
 
 Analytics endpoints remain public. Supabase Auth supplies optional email/password and anonymous
-guest sessions; only permanent authenticated users can access `/api/v1/saved-analyses`. The
-backend verifies access-token signatures against the project's rotating asymmetric JWKS and uses
-the verified `sub` UUID for every ownership query. It never accepts a user identifier from a
-request payload and does not store passwords or duplicate Supabase credentials.
+guest sessions. The backend verifies access-token signatures against the project's rotating
+asymmetric JWKS and does not store passwords or duplicate Supabase credentials.
 
 Add these values to the project-root `.env`:
 
@@ -179,9 +175,9 @@ Supabase dashboard setup:
 4. Keep the anonymous sign-in rate limit enabled and enable CAPTCHA/Turnstile in public deployments.
 5. Establish cleanup for old anonymous users, which Supabase does not remove automatically.
 
-Email confirmation follows the dashboard setting. Anonymous sessions are temporary, cannot save
-analyses, and cannot be recovered after logout or cleared browser storage. Apply the existing
-schema with `python -m alembic upgrade head`. Run backend verification with `python -m pytest`,
+Email confirmation follows the dashboard setting. Anonymous sessions are temporary and cannot be
+recovered after logout or cleared browser storage. Apply the existing schema with
+`python -m alembic upgrade head`. Run backend verification with `python -m pytest`,
 `python -m ruff check .`, and `python -m ruff format --check .`; in `frontend`, run `npm test`,
 `npm run typecheck`, `npm run build`, and `npm run test:sites`.
 
