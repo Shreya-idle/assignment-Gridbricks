@@ -26,7 +26,7 @@ class Settings(BaseSettings):
     elexon_max_retries: int = Field(default=3, ge=0, le=5)
     elexon_max_range_days: int = Field(default=7, ge=1, le=31)
     analytics_forecast_history_days: int = Field(default=7, ge=1, le=31)
-    cors_origins: list[str] = ["http://localhost:5173"]
+    cors_origins: list[str] = ["https://assignmentgridbricks.vercel.app"]
     default_timezone: str = "Europe/London"
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO"
     database_url: SecretStr | None = None

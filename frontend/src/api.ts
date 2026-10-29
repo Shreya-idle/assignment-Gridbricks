@@ -64,6 +64,7 @@ async function request<T>(path: string, validate: (value: unknown) => value is T
   if (!validate(body)) {
   if (path.includes("forecast-accuracy")) {
     debugAnalyticsContract(body);
+    console.log("Analytics validation failed. Full response:", body);
   }
 
   throw new ApiError(
