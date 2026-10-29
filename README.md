@@ -14,6 +14,9 @@ and anonymous guest sessions.
 - The browser receives only the Supabase project URL and publishable key. Database credentials and
   service-role keys remain backend-only.
 
+  <img width="1336" height="1226" alt="mermaid-diagram" src="https://github.com/user-attachments/assets/60c749ad-6a8e-4f5f-9036-90de7d39c99e" />
+
+
 ## Configuration
 
 Copy placeholder values from `backend/.env.example` and `frontend/.env.example`. The backend reads
